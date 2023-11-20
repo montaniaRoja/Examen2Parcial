@@ -24,28 +24,20 @@ public class TemporalActiivity extends AppCompatActivity {
 
         // Recupera el ID de la persona de la Intent
         int personaId = getIntent().getIntExtra("personaId", -1);
+        try {
+            if (personaId != -1) {
+                byte[] videoBlob = getVideoFromDatabase(personaId);
 
-        if (personaId != -1) {
-
-            byte[] videoBlob = getVideoFromDatabase(personaId);
-
-            if (videoBlob != null) {
-                Toast.makeText(this, "guardar video temporalmente", Toast.LENGTH_SHORT).show();
-                File tempVideoFile;
-                try {
-                    tempVideoFile = File.createTempFile("temp_video", ".mp4", getCacheDir());
-                    FileOutputStream fos = new FileOutputStream(tempVideoFile);
-                    fos.write(videoBlob);
-                    fos.close();
-
-
-                    playVideo(tempVideoFile.getAbsolutePath());
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (videoBlob != null) {
+                    String tempVideoPath = saveVideoToTempFile(videoBlob);
+                    playVideo(tempVideoPath);
+                } else {
+                    Toast.makeText(this, "El video no está disponible", Toast.LENGTH_SHORT).show();
                 }
-            } else {
-                Toast.makeText(this, "No se encontró el video en la base de datos", Toast.LENGTH_SHORT).show();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error al reproducir el video", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -55,15 +47,26 @@ public class TemporalActiivity extends AppCompatActivity {
 
         Cursor cursor = db.rawQuery("SELECT video FROM " + Transacciones.Tabla1 + " WHERE id = ?", new String[]{String.valueOf(personaId)});
 
-        if (cursor.moveToFirst()) {
-            return cursor.getBlob(0); //
+        if (cursor != null && cursor.moveToFirst()) {
+            return cursor.getBlob(0);
         }
 
         return null;
     }
 
+
     private void playVideo(String videoPath) {
         videoView2.setVideoPath(videoPath);
         videoView2.start();
     }
+
+    private String saveVideoToTempFile(byte[] videoBlob) throws IOException {
+        File tempVideoFile = File.createTempFile("temp_video", ".mp4", getCacheDir());
+        FileOutputStream fos = new FileOutputStream(tempVideoFile);
+        fos.write(videoBlob);
+        fos.close();
+        return tempVideoFile.getAbsolutePath();
+    }
+
+
 }
