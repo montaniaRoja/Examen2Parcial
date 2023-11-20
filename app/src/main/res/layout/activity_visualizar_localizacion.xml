@@ -19,18 +19,6 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:background="#FFEB3B"
-        android:text="MAPA"
-        android:textSize="34sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mapView" />
-
     <EditText
         android:id="@+id/txtLat"
         android:layout_width="wrap_content"
@@ -40,6 +28,18 @@
         android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/mapView" />
+
+    <EditText
+        android:id="@+id/txtLong"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:hint="Longitud"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtLat" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
