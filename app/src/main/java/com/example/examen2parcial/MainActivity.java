@@ -103,8 +103,7 @@ public class MainActivity extends AppCompatActivity {
 
             videoView.setVideoURI(videoUri);
 
-            // Convierte el video a bytes
-            byte[] videoBytes = convertirVideoABytes(videoUri);
+
             videoView.start();
 
             checkLocationPermission();
@@ -132,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     private void guardarPersona() {
         String nombre = txtNombre.getText().toString();
         String telefono = txtTelefono.getText().toString();
@@ -139,7 +139,9 @@ public class MainActivity extends AppCompatActivity {
         String latitud = txtLatitud.getText().toString();
         String longitud = txtLongitud.getText().toString();
 
-        byte[] videoEnBytes = readVideoFromFile(videoUri);
+
+        byte[] videoEnBytes = convertirVideoABytes(videoUri);
+
 
 
         try {
@@ -147,14 +149,12 @@ public class MainActivity extends AppCompatActivity {
             SQLiteConexion conexion = new SQLiteConexion(this, Transacciones.nameDB, null, 1);
             SQLiteDatabase db = conexion.getWritableDatabase();
 
-
             ContentValues valores = new ContentValues();
             valores.put(Transacciones.nombre, nombre);
             valores.put(Transacciones.telefono, telefono);
             valores.put(Transacciones.latitud, latitud);
             valores.put(Transacciones.longitud, longitud);
-
-            valores.put(Transacciones.video, videoEnBytes);
+            valores.put(Transacciones.video, String.valueOf(videoUri));
 
             Long Result = db.insert(Transacciones.Tabla1, Transacciones.id, valores);
 
@@ -175,35 +175,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+/*
 
-        private byte[] readVideoFromFile(Uri videoUri) {
-            InputStream inputStream = null;
-
-            try {
-                inputStream = getContentResolver().openInputStream(videoUri);
-                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                int nRead;
-                byte[] data = new byte[16384];
-                while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
-                    buffer.write(data, 0, nRead);
-                }
-                buffer.flush();
-                return buffer.toByteArray();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (inputStream != null) {
-                        inputStream.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            return null; // Retornar null en caso de error
-        }
-
+*/
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     private void checkLocationPermission() {
@@ -251,25 +225,15 @@ public class MainActivity extends AppCompatActivity {
                 double latitude = location.getLatitude();
                 double longitude = location.getLongitude();
 
-                // Ahora tienes la latitud y longitud, puedes usar estos valores en tu aplicación.
-                // Por ejemplo, puedes mostrarlos en TextViews o guardarlos en tu base de datos.
+
                 txtLatitud.setText(String.valueOf(latitude));
                 txtLongitud.setText(String.valueOf(longitude));
             } else {
-                // Si la ubicación no está disponible, puedes solicitar actualizaciones de ubicación.
-                // locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-                // Ten en cuenta que este código es solo un ejemplo básico.
+
             }
         }
     }
 
-// Puedes agregar un LocationListener si necesitas actualizaciones de ubicación continuas.
-// private final LocationListener locationListener = new LocationListener() {
-//     @Override
-//     public void onLocationChanged(Location location) {
-//         // Aquí manejas las actualizaciones de ubicación en tiempo real.
-//     }
-// };
 
 }
 

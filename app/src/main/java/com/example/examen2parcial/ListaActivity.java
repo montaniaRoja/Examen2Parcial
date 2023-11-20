@@ -8,20 +8,24 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AlertDialog;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
-
+import java.util.Arrays;
 
 
 public class ListaActivity extends AppCompatActivity {
@@ -108,9 +112,9 @@ public class ListaActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Ver Localizacion de " + persona.getNombre());
 
-        builder.setMessage("¿Desea ver la localizacion ?");
+        builder.setMessage("¿Desea ver la localizacion o el video?");
 
-        builder.setPositiveButton("Ver", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Localoizacion", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(ListaActivity.this, VisualizarLocalizacion.class);
@@ -120,12 +124,18 @@ public class ListaActivity extends AppCompatActivity {
             }
         });
 
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("Video", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
+                // Envía el ID en lugar del video directamente
+                int personaId = persona.getId();
+
+                Intent intent = new Intent(ListaActivity.this, TemporalActiivity.class);
+                intent.putExtra("personaId", personaId);
+                startActivity(intent);
             }
-        });
+
+    });
 
         builder.show();
     }
@@ -161,10 +171,15 @@ public class ListaActivity extends AppCompatActivity {
 
     private void FillList() {
         for (int i = 0; i < listPersonas.size(); i++) {
+            byte[] videoBytes = listPersonas.get(i).getVideo();
+            int videoLength = (videoBytes != null) ? videoBytes.length : 0;
+
             arregloPersonas.add(listPersonas.get(i).getNombre() + "-" +
-                    listPersonas.get(i).getLatitud() + listPersonas.get(i).getLongitud()+ "**" );
+                    listPersonas.get(i).getLatitud() + listPersonas.get(i).getLongitud() + " " +
+                    videoLength + "**");
         }
     }
+
 
 
 

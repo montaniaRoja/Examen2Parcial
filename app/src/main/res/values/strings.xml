@@ -3,4 +3,5 @@
     <string name="Respuesta">se guardo la data</string>
     <string name="ErrorResp">error</string>
     <string name="ErrorDB">error al guardar</string>
+    <string name="errorVideo">no se pudo guardar el video</string>
 </resources>
