@@ -1,15 +1,20 @@
 package com.example.examen2parcial;
 
 
+import static java.util.Locale.filter;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import androidx.appcompat.app.AlertDialog;
 
@@ -20,11 +25,12 @@ import java.util.ArrayList;
 
 
 public class ListaActivity extends AppCompatActivity {
-
+    private ArrayAdapter<String> adapter;
+    private ArrayList<String> originalList;
     SQLiteConexion conexion;
     ListView listView;
     ArrayList<Persona> listPersonas;
-
+    private EditText editTextSearch;
     ArrayList<String> arregloPersonas;
 
     int selectedPosition = ListView.INVALID_POSITION;
@@ -43,13 +49,30 @@ public class ListaActivity extends AppCompatActivity {
         conexion = new SQLiteConexion(this, Transacciones.nameDB, null, 1);
         arregloPersonas = new ArrayList<>();
         listView = (ListView) findViewById(R.id.listView);
-
+        editTextSearch=findViewById(R.id.editTextSearch);
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-
         arregloPersona = new ArrayList<>();
 
+
         ArrayAdapter<String> adp = new ArrayAdapter<>(this, android.R.layout.simple_list_item_activated_1, arregloPersonas);
+        adapter=adp;
         listView.setAdapter(adp);
+
+        editTextSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // Filtra la lista al cambiar el texto
+                filter(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -68,6 +91,17 @@ public class ListaActivity extends AppCompatActivity {
 
     }
 
+    private void filter(String query) {
+        ArrayList<String> filteredList = new ArrayList<>();
+        for (String item : originalList) {
+            if (item.toLowerCase().contains(query.toLowerCase())) {
+                filteredList.add(item);
+            }
+        }
+        adapter.clear();
+        adapter.addAll(filteredList);
+        adapter.notifyDataSetChanged();
+    }
 
 
     private void abrirVisualizarLocalizacion(Persona persona, String latitud, String longitud) {
@@ -116,8 +150,13 @@ public class ListaActivity extends AppCompatActivity {
         }
 
         cursor.close();
+
+        // Inicializar originalList antes de FillList()
+        originalList = new ArrayList<>(arregloPersonas);
+
         FillList();
     }
+
 
 
     private void FillList() {
