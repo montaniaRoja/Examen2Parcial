@@ -8,14 +8,14 @@
 
     <VideoView
         android:id="@+id/videoView2"
-        android:layout_width="311dp"
-        android:layout_height="497dp"
+        android:layout_width="396dp"
+        android:layout_height="593dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="25dp"
         android:layout_marginEnd="10dp"
+        android:background="@android:color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:background="@android:color/black"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView

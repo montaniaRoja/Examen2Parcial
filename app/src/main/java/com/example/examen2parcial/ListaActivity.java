@@ -80,7 +80,7 @@ public class ListaActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Obtener la Persona correspondiente a la posición seleccionada
+
                 Persona personaSeleccionada = listPersonas.get(position);
 
                 // Abrir la VisualizarLocalizacion Activity con la latitud y longitud de la persona
@@ -114,7 +114,7 @@ public class ListaActivity extends AppCompatActivity {
 
         builder.setMessage("¿Desea ver la localizacion o el video?");
 
-        builder.setPositiveButton("Localoizacion", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Localizacion", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(ListaActivity.this, VisualizarLocalizacion.class);
@@ -176,7 +176,7 @@ public class ListaActivity extends AppCompatActivity {
 
             arregloPersonas.add(listPersonas.get(i).getNombre() + "-" +
                     listPersonas.get(i).getLatitud() + listPersonas.get(i).getLongitud() + " " +
-                    videoLength + "**");
+                    videoLength + " **");
         }
     }
 

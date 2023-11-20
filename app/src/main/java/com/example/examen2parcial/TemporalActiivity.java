@@ -3,7 +3,9 @@ package com.example.examen2parcial;
 import androidx.appcompat.app.AppCompatActivity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
+import android.widget.MediaController;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -22,7 +24,7 @@ public class TemporalActiivity extends AppCompatActivity {
 
         videoView2 = findViewById(R.id.videoView2);
 
-        // Recupera el ID de la persona de la Intent
+
         int personaId = getIntent().getIntExtra("personaId", -1);
         try {
             if (personaId != -1) {
@@ -32,12 +34,12 @@ public class TemporalActiivity extends AppCompatActivity {
                     String tempVideoPath = saveVideoToTempFile(videoBlob);
                     playVideo(tempVideoPath);
                 } else {
-                    Toast.makeText(this, "El video no está disponible", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "El video no está disponible", Toast.LENGTH_LONG).show();
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(this, "Error al reproducir el video", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error al reproducir el video", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -51,14 +53,32 @@ public class TemporalActiivity extends AppCompatActivity {
             return cursor.getBlob(0);
         }
 
+        if (cursor != null) {
+            cursor.close();
+        }
+
         return null;
     }
 
 
+
     private void playVideo(String videoPath) {
-        videoView2.setVideoPath(videoPath);
-        videoView2.start();
+        try {
+
+            Uri uri= Uri.parse(videoPath);
+            videoView2.setVideoURI(uri);
+            MediaController media = new MediaController(this);
+            videoView2.setMediaController(media);
+            media.setAnchorView(videoView2);
+
+            //videoView2.setVideoPath(videoPath);
+            //videoView2.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error al reproducir el video", Toast.LENGTH_LONG).show();
+        }
     }
+
 
     private String saveVideoToTempFile(byte[] videoBlob) throws IOException {
         File tempVideoFile = File.createTempFile("temp_video", ".mp4", getCacheDir());
