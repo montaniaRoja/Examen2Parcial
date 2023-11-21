@@ -133,19 +133,20 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void guardarPersona() {
-        String nombre = txtNombre.getText().toString();
-        String telefono = txtTelefono.getText().toString();
+        String nombre = txtNombre.getText().toString().trim();
+        String telefono = txtTelefono.getText().toString().trim();
+        String latitud = txtLatitud.getText().toString().trim();
+        String longitud = txtLongitud.getText().toString().trim();
 
-        String latitud = txtLatitud.getText().toString();
-        String longitud = txtLongitud.getText().toString();
-
+        // Verificar que los campos obligatorios no estén vacíos
+        if (nombre.isEmpty() || telefono.isEmpty() || videoUri == null) {
+            Toast.makeText(this, "Por favor, complete todos los campos y seleccione un video", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         byte[] videoEnBytes = convertirVideoABytes(videoUri);
 
-
-
         try {
-
             SQLiteConexion conexion = new SQLiteConexion(this, Transacciones.nameDB, null, 1);
             SQLiteDatabase db = conexion.getWritableDatabase();
 
@@ -154,18 +155,23 @@ public class MainActivity extends AppCompatActivity {
             valores.put(Transacciones.telefono, telefono);
             valores.put(Transacciones.latitud, latitud);
             valores.put(Transacciones.longitud, longitud);
-            valores.put(Transacciones.video, String.valueOf(videoUri));
+            valores.put(Transacciones.video, videoEnBytes);
 
-            Long Result = db.insert(Transacciones.Tabla1, Transacciones.id, valores);
+            Long result = db.insert(Transacciones.Tabla1, Transacciones.id, valores);
 
-            Toast.makeText(this, getString(R.string.Respuesta), Toast.LENGTH_SHORT).show();
+            if (result != -1) {
+                Toast.makeText(this, "Persona guardada exitosamente", Toast.LENGTH_SHORT).show();
+                // Resto del código para limpiar los campos y reiniciar la interfaz
+                videoView.setVideoURI(null);
+                txtNombre.setText("");
+                txtTelefono.setText("");
+                txtLatitud.setText("");
+                txtLongitud.setText("");
+            } else {
+                Toast.makeText(this, "Error al intentar guardar la persona", Toast.LENGTH_SHORT).show();
+            }
+
             db.close();
-            videoView.setVideoURI(null);
-            txtNombre.setText("");
-            txtTelefono.setText("");
-            txtLatitud.setText("");
-            txtLongitud.setText("");
-
         } catch (SQLiteException e) {
             e.printStackTrace();
             Toast.makeText(this, getString(R.string.ErrorDB), Toast.LENGTH_SHORT).show();
@@ -175,7 +181,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-/*
+
+    /*
 
 */
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -183,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
     private void checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted, request the permission.
+
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);

@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -36,7 +37,7 @@ public class ListaActivity extends AppCompatActivity {
     ArrayList<Persona> listPersonas;
     private EditText editTextSearch;
     ArrayList<String> arregloPersonas;
-
+    Button btnEliminar, btnAct;
     int selectedPosition = ListView.INVALID_POSITION;
 
     private byte[] selectedPersona;
@@ -53,14 +54,29 @@ public class ListaActivity extends AppCompatActivity {
         conexion = new SQLiteConexion(this, Transacciones.nameDB, null, 1);
         arregloPersonas = new ArrayList<>();
         listView = (ListView) findViewById(R.id.listView);
+        btnEliminar = (Button) findViewById(R.id.btnEliminar);
+        btnAct = (Button) findViewById(R.id.btnAct);
         editTextSearch=findViewById(R.id.editTextSearch);
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         arregloPersona = new ArrayList<>();
 
 
+        btnAct.setOnClickListener(e -> abrirActualizar());
+
         ArrayAdapter<String> adp = new ArrayAdapter<>(this, android.R.layout.simple_list_item_activated_1, arregloPersonas);
         adapter=adp;
         listView.setAdapter(adp);
+
+        btnEliminar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                int selectedContactId = obtenerIDContactoSeleccionado();
+
+                eliminarContacto(selectedContactId);
+            }
+        });
+
 
         editTextSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -95,6 +111,73 @@ public class ListaActivity extends AppCompatActivity {
 
     }
 
+    private void abrirActualizar() {
+        int selectedContactId = obtenerIDContactoSeleccionado();
+
+        Intent intent=new Intent(ListaActivity.this, ActualizarActivity.class);
+        intent.putExtra("ContactoId", selectedContactId);
+        startActivity(intent);
+
+
+
+    }
+
+    private void eliminarContacto(final int contactId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Eliminar contacto");
+        builder.setMessage("¿Está seguro de que desea eliminar este contacto?");
+
+        builder.setPositiveButton("Sí", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                SQLiteDatabase db = conexion.getWritableDatabase();
+                String[] whereArgs = { String.valueOf(contactId) };
+
+
+                db.delete(Transacciones.Tabla1, Transacciones.id + " = ?", whereArgs);
+
+                db.close();
+                arregloPersonas.clear();
+                GetPersons();
+
+                // Notifica al adaptador que los datos han cambiado
+                ArrayAdapter<String> adapter = (ArrayAdapter<String>) listView.getAdapter();
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Si el usuario cancela la eliminación, simplemente cerramos el cuadro de diálogo
+                dialog.dismiss();
+            }
+        });
+
+        builder.show();
+    }
+
+    private int obtenerIDContactoSeleccionado() {
+        int selectedContactId = -1; // Valor predeterminado en caso de error o ningún elemento seleccionado
+        int selectedItemPosition = listView.getCheckedItemPosition();
+
+        if (selectedItemPosition != AdapterView.INVALID_POSITION) {
+            String selectedContact = arregloPersonas.get(selectedItemPosition);
+            // Dividir la cadena en partes: ID - Nombre Teléfono
+            String[] parts = selectedContact.split("-");
+            if (parts.length >= 1) {
+                try {
+                    selectedContactId = Integer.parseInt(parts[0].trim()); // Extraer el ID
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return selectedContactId;
+    }
+
     private void filter(String query) {
         ArrayList<String> filteredList = new ArrayList<>();
         for (String item : originalList) {
@@ -107,7 +190,7 @@ public class ListaActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
-
+    
     private void abrirVisualizarLocalizacion(Persona persona, String latitud, String longitud) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Ver Localizacion de " + persona.getNombre());
@@ -174,7 +257,7 @@ public class ListaActivity extends AppCompatActivity {
             byte[] videoBytes = listPersonas.get(i).getVideo();
             int videoLength = (videoBytes != null) ? videoBytes.length : 0;
 
-            arregloPersonas.add(listPersonas.get(i).getNombre() + "-" +
+            arregloPersonas.add(listPersonas.get(i).getId()+"-"+listPersonas.get(i).getNombre() + "-" +
                     listPersonas.get(i).getLatitud() + listPersonas.get(i).getLongitud() + " " +
                     videoLength + " **");
         }

@@ -35,6 +35,9 @@
         android:theme="@style/Theme.Examen2Parcial"
         tools:targetApi="31">
         <activity
+            android:name=".ActualizarActivity"
+            android:exported="false" />
+        <activity
             android:name=".TemporalActiivity"
             android:exported="false" />
 
