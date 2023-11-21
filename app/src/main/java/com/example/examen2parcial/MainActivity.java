@@ -233,11 +233,10 @@ public class MainActivity extends AppCompatActivity {
                 double latitude = location.getLatitude();
                 double longitude = location.getLongitude();
 
-
                 txtLatitud.setText(String.valueOf(latitude));
                 txtLongitud.setText(String.valueOf(longitude));
             } else {
-
+                Toast.makeText(this, "no se pudo recuperar la ubicacion", Toast.LENGTH_SHORT).show();
             }
         }
     }
