@@ -35,7 +35,7 @@ public class VisualizarLocalizacion extends AppCompatActivity {
         mapView.getMapAsync(googleMap -> {
             // El mapa está listo
             mMap = googleMap;
-
+            //COMENTARIO PARA ACTUALIZAR ARCHIVO PARA HACER COMMIT
             // Obtener la latitud y longitud de los extras
             Intent intent = getIntent();
             double latitud = Double.parseDouble(intent.getStringExtra("latitud"));
