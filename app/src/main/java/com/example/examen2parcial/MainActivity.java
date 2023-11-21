@@ -209,6 +209,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void getLocation() {
+
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         if (locationManager != null) {
