@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void capturarVideo() {
-        getLocation();
+      //  getLocation();
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
 
         if (intent.resolveActivity(getPackageManager()) != null) {
@@ -214,7 +214,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void getLocation() {
-
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         if (locationManager != null) {
@@ -225,20 +224,35 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new android.location.LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
 
-            if (location != null) {
-                double latitude = location.getLatitude();
-                double longitude = location.getLongitude();
+                    double latitude = location.getLatitude();
+                    double longitude = location.getLongitude();
+
+                    txtLatitud.setText(String.valueOf(latitude));
+                    txtLongitud.setText(String.valueOf(longitude));
 
 
-                txtLatitud.setText(String.valueOf(latitude));
-                txtLongitud.setText(String.valueOf(longitude));
-            } else {
-                Toast.makeText(this, getString(R.string.ErrorLoc), Toast.LENGTH_SHORT).show();
-            }
+                    locationManager.removeUpdates(this);
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+                }
+            });
         }
     }
+
 
 
 }
