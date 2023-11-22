@@ -4,4 +4,6 @@
     <string name="ErrorResp">error</string>
     <string name="ErrorDB">error al guardar</string>
     <string name="errorVideo">no se pudo guardar el video</string>
+    <string name="ErrorLoc">no se pudo recuperar la ubicacion</string>
+    <string name="EmptyFieldErr">"favor complete los campos "</string>
 </resources>

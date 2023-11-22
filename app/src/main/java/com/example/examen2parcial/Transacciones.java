@@ -27,7 +27,7 @@ public class Transacciones
 
 
     public static final String CreateTableVideos = "CREATE TABLE videos " +
-            "( id INTEGER PRIMARY KEY AUTOINCREMENT,nombre varchar(100),telefono varchar(100),latitud varchar(100), longitud varchar(100),video BLOB)";
+            "( id INTEGER PRIMARY KEY AUTOINCREMENT,nombre varchar(100),telefono varchar(100),latitud varchar(100), longitud varchar(100),video LONGBLOB)";
 
 
     public static final String DropTableVideos  = "DROP TABLE IF EXISTS videos";

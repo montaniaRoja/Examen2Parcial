@@ -78,7 +78,7 @@ public class SQLiteConexion extends SQLiteOpenHelper
 
         db.close();
 
-        // Si el número de filas afectadas es mayor que 0, la actualización fue exitosa
+
         return filasAfectadas > 0;
     }
 

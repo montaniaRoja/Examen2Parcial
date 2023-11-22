@@ -87,7 +87,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void capturarVideo() {
+        getLocation();
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(intent, 102);
         }
@@ -133,20 +135,22 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void guardarPersona() {
-        String nombre = txtNombre.getText().toString().trim();
-        String telefono = txtTelefono.getText().toString().trim();
-        String latitud = txtLatitud.getText().toString().trim();
-        String longitud = txtLongitud.getText().toString().trim();
+        String nombre = txtNombre.getText().toString();
+        String telefono = txtTelefono.getText().toString();
 
-        // Verificar que los campos obligatorios no estén vacíos
+        String latitud = txtLatitud.getText().toString();
+        String longitud = txtLongitud.getText().toString();
         if (nombre.isEmpty() || telefono.isEmpty() || videoUri == null) {
-            Toast.makeText(this, "Por favor, complete todos los campos y seleccione un video", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.EmptyFieldErr), Toast.LENGTH_SHORT).show();
             return;
         }
 
         byte[] videoEnBytes = convertirVideoABytes(videoUri);
 
+
+
         try {
+
             SQLiteConexion conexion = new SQLiteConexion(this, Transacciones.nameDB, null, 1);
             SQLiteDatabase db = conexion.getWritableDatabase();
 
@@ -155,23 +159,18 @@ public class MainActivity extends AppCompatActivity {
             valores.put(Transacciones.telefono, telefono);
             valores.put(Transacciones.latitud, latitud);
             valores.put(Transacciones.longitud, longitud);
-            valores.put(Transacciones.video, videoEnBytes);
+            valores.put(Transacciones.video, String.valueOf(videoUri));
 
-            Long result = db.insert(Transacciones.Tabla1, Transacciones.id, valores);
+            Long Result = db.insert(Transacciones.Tabla1, Transacciones.id, valores);
 
-            if (result != -1) {
-                Toast.makeText(this, "Persona guardada exitosamente", Toast.LENGTH_SHORT).show();
-                // Resto del código para limpiar los campos y reiniciar la interfaz
-                videoView.setVideoURI(null);
-                txtNombre.setText("");
-                txtTelefono.setText("");
-                txtLatitud.setText("");
-                txtLongitud.setText("");
-            } else {
-                Toast.makeText(this, "Error al intentar guardar la persona", Toast.LENGTH_SHORT).show();
-            }
-
+            Toast.makeText(this, getString(R.string.Respuesta), Toast.LENGTH_SHORT).show();
             db.close();
+            videoView.setVideoURI(null);
+            txtNombre.setText("");
+            txtTelefono.setText("");
+            txtLatitud.setText("");
+            txtLongitud.setText("");
+
         } catch (SQLiteException e) {
             e.printStackTrace();
             Toast.makeText(this, getString(R.string.ErrorDB), Toast.LENGTH_SHORT).show();
@@ -181,22 +180,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     /*
 
-*/
+     */
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     private void checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-
+            // Permission is not granted, request the permission.
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
         } else {
             // Permission has already been granted.
-            getLocation();
+
         }
     }
 
@@ -206,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission granted, proceed with getting the location.
-                getLocation();
+               // getLocation();
             } else {
                 // Permission denied, handle accordingly.
                 Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
@@ -233,10 +231,11 @@ public class MainActivity extends AppCompatActivity {
                 double latitude = location.getLatitude();
                 double longitude = location.getLongitude();
 
+
                 txtLatitud.setText(String.valueOf(latitude));
                 txtLongitud.setText(String.valueOf(longitude));
             } else {
-                Toast.makeText(this, "no se pudo recuperar la ubicacion", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.ErrorLoc), Toast.LENGTH_SHORT).show();
             }
         }
     }
